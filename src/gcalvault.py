@@ -167,7 +167,7 @@ class Gcalvault:
         if len(pos_args) >= 2:
             self.user = pos_args[1].lower().strip()
         elif os.path.exists(self.userfile_path):
-            self.user = open(self.userfile_path).readlines()
+            self.user = ''.join(open(self.userfile_path).readlines())
         if authenticate:
             self._authenticate()
             return False
