@@ -1,11 +1,12 @@
 #!/bin/bash
 
 if [ "$1" == "-a" ]; then
-    gcalvault -a
+    echo "Initiating image..."
+    /usr/local/bin/gcalvault -a
     exit 0
 fi
 
-if [ ! -f "/root/.gcalvault/user.txt" ]; then
+if [ ! -f "/root/.gcalvault/.user" ]; then
     echo "No authentication data found, please initiate this image first!"
     exit 1
 fi
