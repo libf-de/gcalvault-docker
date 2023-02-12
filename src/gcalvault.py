@@ -75,7 +75,7 @@ class Gcalvault:
         if not self.export_only:
             self._repo = GitVaultRepo("gcalvault", self.output_dir, [".ics"])
 
-        if self.no_cache: # TODO: Do properly :(
+        if self.no_cache and os.path.exists(os.path.join(self.conf_dir, ".etags")): # TODO: Do properly :(
             os.remove(os.path.join(self.conf_dir, ".etags"))
 
         calendars = self._get_calendars_singular(credentials)
