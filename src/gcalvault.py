@@ -90,10 +90,12 @@ class Gcalvault:
         if self._repo:
             self._repo.commit("gcalvault sync")
 
-    def usage(self):
+    @staticmethod
+    def usage():
         return pathlib.Path(usage_file_path).read_text().strip()
 
-    def version(self):
+    @staticmethod
+    def version():
         return pathlib.Path(version_file_path).read_text().strip()
 
     def _parse_options(self, cli_args):
@@ -189,8 +191,8 @@ class Gcalvault:
         Ensure working directories (config and output) are existant
         :return: none
         """
-        for dir in [self.conf_dir, self.output_dir]:
-            pathlib.Path(dir).mkdir(parents=True, exist_ok=True)
+        for directory in [self.conf_dir, self.output_dir]:
+            pathlib.Path(directory).mkdir(parents=True, exist_ok=True)
 
     def _get_oauth2_credentials(self):
         token_file_path = os.path.join(self.conf_dir, f"{self.user}.token.json")
@@ -257,7 +259,7 @@ class GcalvaultError(RuntimeError):
     pass
 
 
-class Calendar():
+class Calendar:
 
     def __init__(self, id, name, etag, access_role):
         self.id = id
@@ -268,9 +270,10 @@ class Calendar():
         self.file_name = f"{self.id.strip().lower()}.ics"
 
 
-class GoogleApis():
+class GoogleApis:
 
-    def request_cal_list(self, credentials):
+    @staticmethod
+    def request_cal_list(credentials):
         with build('calendar', 'v3', credentials=credentials) as service:
             return service.calendarList().list().execute()
 
@@ -278,7 +281,8 @@ class GoogleApis():
         url = GOOGLE_CALDAV_URI_FORMAT.format(cal_id=urllib.parse.quote(cal_id))
         return self._request_with_token(url, credentials).text
 
-    def _request_with_token(self, url, credentials, raise_for_status=True):
+    @staticmethod
+    def _request_with_token(url, credentials, raise_for_status=True):
         headers = {'Authorization': f"Bearer {credentials.token}"}
         response = requests.get(url, headers=headers)
         if raise_for_status:
