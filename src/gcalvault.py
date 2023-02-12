@@ -260,7 +260,7 @@ class Gcalvault:
         for item in calendar_list['items']:
             cal_details = self._google_apis.request_cal_details(credentials, item['id'])
             calendars.append(
-                Calendar(item['id'], item['summary'], cal_details, item['accessRole']))
+                Calendar(item['id'], item['summary'], cal_details['etag'], item['accessRole']))
         return calendars
 
     def _get_calendars_singular(self, credentials):
@@ -332,7 +332,8 @@ class GoogleApis:
     @staticmethod
     def request_cal_details(credentials, cal_id):
         with build('calendar', 'v3', credentials=credentials) as service:
-            return service.calendars().get(calendarId=cal_id).execute()
+            return service.events().list(calendarId=cal_id, maxResults=1).execute()
+            #return service.calendars().get(calendarId=cal_id).execute()
     @staticmethod
     def request_cal_list(credentials):
         with build('calendar', 'v3', credentials=credentials) as service:
