@@ -42,6 +42,7 @@ class Gcalvault:
         self.includes = []
         self.export_only = False
         self.clean = False
+        self.push_repo = False
         self.ignore_roles = []
         self.conf_dir = os.path.expanduser("~/.gcalvault")
         self.output_dir = os.getcwd()
@@ -90,6 +91,8 @@ class Gcalvault:
 
         if self._repo:
             self._repo.commit(f"gcalvault sync on {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')} UTC")
+            if self.push_repo:
+                self._repo.push()
 
     @staticmethod
     def usage():

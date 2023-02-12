@@ -34,6 +34,10 @@ class GitVaultRepo():
         else:
             print(f"No revisions to commit to {self._name} repository")
 
+    def push(self):
+        for remote in self._repo.remotes:
+            remote.push()
+
     def _add_gitignore(self):
         gitignore_path = os.path.join(self._repo.working_dir, ".gitignore")
         with open(gitignore_path, 'w') as file:
