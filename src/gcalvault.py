@@ -48,7 +48,9 @@ class Gcalvault:
         self.output_dir = os.getcwd()
         self.client_id = DEFAULT_CLIENT_ID
         self.client_secret = DEFAULT_CLIENT_SECRET
-        self.userfile_path = os.path.join(self.conf_dir, 'user.txt')
+        self.userfile_path = os.path.join(self.conf_dir, '.user')
+        self.client_id_file = os.path.join(self.conf_dir, '.client-id')
+        self.client_secret_file = os.path.join(self.conf_dir, '.client-secret')
 
         self._repo = None
         self._google_oauth2 = google_oauth2 if google_oauth2 is not None else GoogleOAuth2()
@@ -135,7 +137,9 @@ class Gcalvault:
                 self.ignore_roles.append(val.lower())
             elif opt in ['-c', '--conf-dir']:
                 self.conf_dir = val
-                self.userfile_path = os.path.join(self.conf_dir, 'user.txt')
+                self.userfile_path = os.path.join(self.conf_dir, '.user')
+                self.client_id_file = os.path.join(self.conf_dir, '.client-id')
+                self.client_secret_file = os.path.join(self.conf_dir, '.client-secret')
             elif opt in ['-o', '--output-dir', '--vault-dir']:
                 self.output_dir = val
             elif opt in ['--client-id']:
@@ -198,6 +202,14 @@ class Gcalvault:
                 self.user = None
         if self._get_oauth2_credentials() is not None:
             print("Authenticated successfully!")
+            # Save used Client ID/Secret if not the default ones
+            if self.client_secret != DEFAULT_CLIENT_SECRET or self.client_id != DEFAULT_CLIENT_ID:
+                with open(self.client_id_file, 'w') as cif:
+                    cif.write(self.client_id)
+                    cif.close()
+                with open(self.client_secret_file, 'w') as csf:
+                    csf.write(self.client_secret)
+                    csf.close()
 
     def _ensure_dirs(self):
         """
@@ -209,6 +221,13 @@ class Gcalvault:
 
     def _get_oauth2_credentials(self):
         token_file_path = os.path.join(self.conf_dir, f"{self.user}.token.json")
+
+        # Load Client ID/Secret from file if exists and currently using default ones
+        if self.client_id == DEFAULT_CLIENT_ID and os.path.exists(self.client_id_file):
+            self.client_id = ''.join(open(self.client_id_file).readlines())
+
+        if self.client_secret == DEFAULT_CLIENT_SECRET and os.path.exists(self.client_secret_file):
+            self.client_secret = ''.join(open(self.client_secret_file).readlines())
 
         (credentials, new_authorization) = self._google_oauth2 \
             .get_credentials(token_file_path, self.client_id, self.client_secret, OAUTH_SCOPES, self.user)
