@@ -1,0 +1,13 @@
+version: '3'
+
+services:
+  gcalvault:
+    build: .
+    environment:
+      - "CLIENT_ID=<>"
+      - "CLIENT_SECRET=<>"
+      - "NO_CACHE=true"
+    volumes:
+#      - "<ssh-key>:/ssh-key:ro"
+      - "./data:/root/gcalvault"
+      - "./gcalvault:/root/.gcalvault"
