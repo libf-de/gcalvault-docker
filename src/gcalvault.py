@@ -12,7 +12,6 @@ from .google_oauth2 import GoogleOAuth2
 from .git_vault_repo import GitVaultRepo
 from .etag_manager import ETagManager
 
-
 # Note: OAuth2 auth code flow for "installed applications" assumes the client secret
 # cannot actually be kept secret (must be embedded in application/source code).
 # Access to user data must be consented by the user and [more importantly] the
@@ -54,6 +53,7 @@ class Gcalvault:
         self._google_apis = google_apis if google_apis is not None else GoogleApis()
 
     def run(self, cli_args):
+        self._fetch_env()
         if not self._parse_options(cli_args):
             return
         getattr(self, self.command)()
@@ -98,6 +98,15 @@ class Gcalvault:
     def version():
         return pathlib.Path(version_file_path).read_text().strip()
 
+    def _fetch_env(self):
+        self.export_only = (os.getenv("EXPORT_ONLY") or "false").lower() == "true"
+        self.ignore_roles.append((os.getenv("IGNORE_ROLES") or "").split(","))
+        self.conf_dir = os.getenv("CONF_DIR") or self.conf_dir
+        self.output_dir = os.getenv("OUTPUT_DIR") or self.output_dir
+        self.client_id = os.getenv("CLIENT_ID") or self.client_id
+        self.client_secret = os.getenv("CLIENT_SECRET") or self.client_secret
+        self.command = os.getenv("TASK_COMMAND") or self.command
+
     def _parse_options(self, cli_args):
         show_help = show_version = authenticate = False
 
@@ -106,9 +115,9 @@ class Gcalvault:
                 cli_args,
                 'aefi:c:o:h',
                 ['export-only', 'clean', 'ignore-role=',
-                    'conf-dir=', 'output-dir=', 'vault-dir=',
-                    'client-id=', 'client-secret=',
-                    'help', 'version', 'auth', ]
+                 'conf-dir=', 'output-dir=', 'vault-dir=',
+                 'client-id=', 'client-secret=',
+                 'help', 'version', 'auth', ]
             )
         except GetoptError as e:
             raise GcalvaultError(e) from e
@@ -206,7 +215,8 @@ class Gcalvault:
             if self.user != profile_email:
                 if os.path.exists(token_file_path):
                     os.remove(token_file_path)
-                raise GcalvaultError(f"Authenticated user - {profile_email} - was different than <user> argument specified")
+                raise GcalvaultError(
+                    f"Authenticated user - {profile_email} - was different than <user> argument specified")
             with open(self.userfile_path, 'w') as f:
                 f.write(self.user)
                 f.close()
@@ -223,7 +233,8 @@ class Gcalvault:
 
     def _clean_output_dir(self, calendars):
         cal_file_names = [cal.file_name for cal in calendars]
-        file_names_on_disk = [os.path.basename(file).lower() for file in glob.glob(os.path.join(self.output_dir, "*.ics"))]
+        file_names_on_disk = [os.path.basename(file).lower() for file in
+                              glob.glob(os.path.join(self.output_dir, "*.ics"))]
         for file_name_on_disk in file_names_on_disk:
             if file_name_on_disk not in cal_file_names:
                 os.remove(os.path.join(self.output_dir, file_name_on_disk))
