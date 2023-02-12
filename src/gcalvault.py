@@ -134,9 +134,6 @@ class Gcalvault:
             elif opt in ['--version']:
                 show_version = True
 
-        if not os.path.exists(self.conf_dir):
-            os.makedirs(self.conf_dir, exist_ok=True)
-
         if len(opts) == 0 and len(pos_args) == 0:
             show_help = True
 
@@ -153,18 +150,7 @@ class Gcalvault:
         elif os.path.exists(self.userfile_path):
             self.user = open(self.userfile_path).readlines()
         if authenticate:
-            token_file_path = os.path.join(self.conf_dir, f"{self.user}.token.json")
-            if os.path.exists(token_file_path):
-                print(f"Removing existing configuration {self.user}.token.json...")
-                os.remove(token_file_path)
-            self.user = None
-            while self.user is None:
-                self.user = input("Enter your google account email: ")
-                if re.fullmatch(r"([A-Za-z0-9]+[.-_])*[A-Za-z0-9]+@[A-Za-z0-9-]+(\.[A-Z|a-z]{2,})+", self.user) is None:
-                    print("Invalid email specified!")
-                    self.user = None
-            if self._get_oauth2_credentials() is not None:
-                print("Authenticated successfully!")
+            self._authenticate()
             return False
         for arg in pos_args[2:]:
             self.includes.append(arg.lower())
@@ -178,7 +164,31 @@ class Gcalvault:
 
         return True
 
+    def _authenticate(self):
+        """
+        Prompt user for email and authenticate with Google,
+        to ensure credentials for headless operation
+        :return: none
+        """
+        self._ensure_dirs()
+        token_file_path = os.path.join(self.conf_dir, f"{self.user}.token.json")
+        if os.path.exists(token_file_path):
+            print(f"Removing existing configuration {self.user}.token.json...")
+            os.remove(token_file_path)
+        self.user = None
+        while self.user is None:
+            self.user = input("Enter your google account email: ")
+            if re.fullmatch(r"([A-Za-z0-9]+[.-_])*[A-Za-z0-9]+@[A-Za-z0-9-]+(\.[A-Z|a-z]{2,})+", self.user) is None:
+                print("Invalid email specified!")
+                self.user = None
+        if self._get_oauth2_credentials() is not None:
+            print("Authenticated successfully!")
+
     def _ensure_dirs(self):
+        """
+        Ensure working directories (config and output) are existant
+        :return: none
+        """
         for dir in [self.conf_dir, self.output_dir]:
             pathlib.Path(dir).mkdir(parents=True, exist_ok=True)
 
