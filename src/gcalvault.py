@@ -1,5 +1,7 @@
 import os
 import glob
+import re
+
 import requests
 import urllib.parse
 import pathlib
@@ -45,6 +47,7 @@ class Gcalvault:
         self.output_dir = os.getcwd()
         self.client_id = DEFAULT_CLIENT_ID
         self.client_secret = DEFAULT_CLIENT_SECRET
+        self.userfile_path = os.path.join(self.conf_dir, 'user.txt')
 
         self._repo = None
         self._google_oauth2 = google_oauth2 if google_oauth2 is not None else GoogleOAuth2()
@@ -94,16 +97,16 @@ class Gcalvault:
         return pathlib.Path(version_file_path).read_text().strip()
 
     def _parse_options(self, cli_args):
-        show_help = show_version = False
+        show_help = show_version = authenticate = False
 
         try:
             (opts, pos_args) = gnu_getopt(
                 cli_args,
-                'efi:c:o:h',
+                'aefi:c:o:h',
                 ['export-only', 'clean', 'ignore-role=',
                     'conf-dir=', 'output-dir=', 'vault-dir=',
                     'client-id=', 'client-secret=',
-                    'help', 'version', ]
+                    'help', 'version', 'auth', ]
             )
         except GetoptError as e:
             raise GcalvaultError(e) from e
@@ -117,6 +120,7 @@ class Gcalvault:
                 self.ignore_roles.append(val.lower())
             elif opt in ['-c', '--conf-dir']:
                 self.conf_dir = val
+                self.userfile_path = os.path.join(self.conf_dir, 'user.txt')
             elif opt in ['-o', '--output-dir', '--vault-dir']:
                 self.output_dir = val
             elif opt in ['--client-id']:
@@ -125,8 +129,13 @@ class Gcalvault:
                 self.client_secret = val
             elif opt in ['-h', '--help']:
                 show_help = True
+            elif opt in ['-a', '--auth']:
+                authenticate = True
             elif opt in ['--version']:
                 show_version = True
+
+        if not os.path.exists(self.conf_dir):
+            os.makedirs(self.conf_dir, exist_ok=True)
 
         if len(opts) == 0 and len(pos_args) == 0:
             show_help = True
@@ -137,11 +146,26 @@ class Gcalvault:
         if show_version:
             print(self.version())
             return False
-
         if len(pos_args) >= 1:
             self.command = pos_args[0]
         if len(pos_args) >= 2:
             self.user = pos_args[1].lower().strip()
+        elif os.path.exists(self.userfile_path):
+            self.user = open(self.userfile_path).readlines()
+        if authenticate:
+            token_file_path = os.path.join(self.conf_dir, f"{self.user}.token.json")
+            if os.path.exists(token_file_path):
+                print(f"Removing existing configuration {self.user}.token.json...")
+                os.remove(token_file_path)
+            self.user = None
+            while self.user is None:
+                self.user = input("Enter your google account email: ")
+                if re.fullmatch(r"([A-Za-z0-9]+[.-_])*[A-Za-z0-9]+@[A-Za-z0-9-]+(\.[A-Z|a-z]{2,})+", self.user) is None:
+                    print("Invalid email specified!")
+                    self.user = None
+            if self._get_oauth2_credentials() is not None:
+                print("Authenticated successfully!")
+            return False
         for arg in pos_args[2:]:
             self.includes.append(arg.lower())
 
@@ -171,6 +195,9 @@ class Gcalvault:
                 if os.path.exists(token_file_path):
                     os.remove(token_file_path)
                 raise GcalvaultError(f"Authenticated user - {profile_email} - was different than <user> argument specified")
+            with open(self.userfile_path, 'w') as f:
+                f.write(self.user)
+                f.close()
 
         return credentials
 
