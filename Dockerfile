@@ -1,9 +1,11 @@
 FROM python:3.9-alpine
 
-RUN apk add --no-cache bash git
+RUN apk add --no-cache bash git openssh
+
+COPY docker/entrypoint.sh /entrypoint.sh
+COPY docker/cron.sh /cron.sh
 
 COPY dist/gcalvault-latest.tar.gz /usr/local/src/
-COPY docker/entrypoint.sh /entrypoint.sh
 
 RUN cd /usr/local/src \
     && pip install gcalvault-latest.tar.gz[test] \

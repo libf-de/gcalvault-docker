@@ -75,6 +75,9 @@ class Gcalvault:
         if not self.export_only:
             self._repo = GitVaultRepo("gcalvault", self.output_dir, [".ics"])
 
+        if self.no_cache: # TODO: Do properly :(
+            os.remove(os.path.join(self.conf_dir, ".etags"))
+
         calendars = self._get_calendars_singular(credentials)
 
         if self.ignore_roles:
@@ -107,6 +110,7 @@ class Gcalvault:
         return pathlib.Path(version_file_path).read_text().strip()
 
     def _fetch_env(self):
+        print(os.environ)
         self.export_only = (os.getenv("EXPORT_ONLY") or "false").lower() == "true"
         self.ignore_roles.append((os.getenv("IGNORE_ROLES") or "").split(","))
         self.conf_dir = os.getenv("CONF_DIR") or self.conf_dir
@@ -127,7 +131,7 @@ class Gcalvault:
                 ['export-only', 'clean', 'ignore-role=',
                  'conf-dir=', 'output-dir=', 'vault-dir=',
                  'client-id=', 'client-secret=',
-                 'help', 'version', 'auth', 'no-cache',]
+                 'help', 'version', 'auth', 'push', 'no-cache',]
             )
         except GetoptError as e:
             raise GcalvaultError(e) from e

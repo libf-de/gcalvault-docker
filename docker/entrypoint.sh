@@ -13,8 +13,10 @@ fi
 
 echo "Creating cronjob..."
 
+export > /env
+
 EXECAT="${EXECAT:-0 3 * * *}"
-echo "$EXECAT /usr/local/bin/gcalvault sync" >> /var/spool/cron/crontabs/root
+echo "$EXECAT /bin/bash /cron.sh" >> /var/spool/cron/crontabs/root
 
 echo "Syncing now..."
 /usr/local/bin/gcalvault sync

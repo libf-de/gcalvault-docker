@@ -35,6 +35,14 @@ class GitVaultRepo():
             print(f"No revisions to commit to {self._name} repository")
 
     def push(self):
+        print("Pushing repository...")
+        if os.path.exists("/ssh-key"):
+            ssh_cmd = 'ssh -o StrictHostKeyChecking=no -i /ssh-key'
+            with self._repo.git.custom_environment(GIT_SSH_COMMAND=ssh_cmd):
+                for remote in self._repo.remotes:
+                    remote.push()
+            return
+
         for remote in self._repo.remotes:
             remote.push()
 
