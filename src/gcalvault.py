@@ -1,6 +1,7 @@
 import os
 import glob
 import re
+from datetime import datetime
 
 import requests
 import urllib.parse
@@ -88,7 +89,7 @@ class Gcalvault:
         self._dl_and_save_calendars(calendars, credentials)
 
         if self._repo:
-            self._repo.commit("gcalvault sync")
+            self._repo.commit(f"gcalvault sync on {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')} UTC")
 
     @staticmethod
     def usage():
