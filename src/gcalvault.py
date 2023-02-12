@@ -43,7 +43,9 @@ class Gcalvault:
         self.export_only = False
         self.clean = False
         self.push_repo = False
+        self.no_cache = False
         self.ignore_roles = []
+        self.calendars = []
         self.conf_dir = os.path.expanduser("~/.gcalvault")
         self.output_dir = os.getcwd()
         self.client_id = DEFAULT_CLIENT_ID
@@ -73,7 +75,7 @@ class Gcalvault:
         if not self.export_only:
             self._repo = GitVaultRepo("gcalvault", self.output_dir, [".ics"])
 
-        calendars = self._get_calendars(credentials)
+        calendars = self._get_calendars_singular(credentials)
 
         if self.ignore_roles:
             calendars = [cal for cal in calendars if cal.access_role not in self.ignore_roles]
@@ -112,6 +114,8 @@ class Gcalvault:
         self.client_id = os.getenv("CLIENT_ID") or self.client_id
         self.client_secret = os.getenv("CLIENT_SECRET") or self.client_secret
         self.command = os.getenv("TASK_COMMAND") or self.command
+        self.push_repo = (os.getenv("PUSH_REPO") or "false").lower() == "true"
+        self.no_cache = (os.getenv("NO_CACHE") or "false").lower() == "true"
 
     def _parse_options(self, cli_args):
         show_help = show_version = authenticate = False
@@ -123,7 +127,7 @@ class Gcalvault:
                 ['export-only', 'clean', 'ignore-role=',
                  'conf-dir=', 'output-dir=', 'vault-dir=',
                  'client-id=', 'client-secret=',
-                 'help', 'version', 'auth', ]
+                 'help', 'version', 'auth', 'no-cache',]
             )
         except GetoptError as e:
             raise GcalvaultError(e) from e
@@ -133,6 +137,10 @@ class Gcalvault:
                 self.export_only = True
             elif opt in ['-f', '--clean']:
                 self.clean = True
+            elif opt in ['-p', '--push']:
+                self.push_repo = True
+            elif opt in ['--no-cache']:
+                self.no_cache = True
             elif opt in ['-i', '--ignore-role']:
                 self.ignore_roles.append(val.lower())
             elif opt in ['-c', '--conf-dir']:
@@ -250,9 +258,24 @@ class Gcalvault:
         calendars = []
         calendar_list = self._google_apis.request_cal_list(credentials)
         for item in calendar_list['items']:
+            cal_details = self._google_apis.request_cal_details(credentials, item['id'])
             calendars.append(
-                Calendar(item['id'], item['summary'], item['etag'], item['accessRole']))
+                Calendar(item['id'], item['summary'], cal_details, item['accessRole']))
         return calendars
+
+    def _get_calendars_singular(self, credentials):
+        """
+        Updates the etag in the stored calendar list
+        :param credentials: Google API credentials
+        :return: list<Calendar>
+        """
+        if len(self.calendars) == 0 or self.no_cache:
+            self.calendars = self._get_calendars(credentials)
+            return self.calendars
+        for calendar in self.calendars:
+            cal_details = self._google_apis.request_cal_details(credentials, calendar.id)
+            calendar.etag = cal_details['etag']
+        return self.calendars
 
     def _clean_output_dir(self, calendars):
         cal_file_names = [cal.file_name for cal in calendars]
@@ -306,6 +329,10 @@ class Calendar:
 
 class GoogleApis:
 
+    @staticmethod
+    def request_cal_details(credentials, cal_id):
+        with build('calendar', 'v3', credentials=credentials) as service:
+            return service.calendars().get(calendarId=cal_id).execute()
     @staticmethod
     def request_cal_list(credentials):
         with build('calendar', 'v3', credentials=credentials) as service:
