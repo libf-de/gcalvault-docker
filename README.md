@@ -16,6 +16,10 @@ Features:
 - Uses [GitPython](https://gitpython.readthedocs.io) to manage local git repo for version history under the covers
 
 # Usage
+Init with docker compose:
+```
+docker compose run --interactive --tty gcalvault -a
+```
 
 Some example commands...
 
