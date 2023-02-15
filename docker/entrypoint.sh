@@ -1,13 +1,13 @@
 #!/bin/bash
 
-if [ "$1" == "-a" ]; then
+if [ "$1" == "setup" ]; then
     echo "Initiating image..."
-    /usr/local/bin/gcalvault -a
+    /usr/local/bin/gcalvault "$@"
     exit 0
 fi
 
-if [ ! -f "/root/.gcalvault/.user" ]; then
-    echo "No authentication data found, please initiate this image first!"
+if [ ! -f "/app/config/config.json" ]; then
+    echo "No configuration file found, please initiate this image first!"
     exit 1
 fi
 
@@ -16,7 +16,7 @@ echo "Creating cronjob..."
 export > /env
 
 EXECAT="${EXECAT:-0 3 * * *}"
-echo "$EXECAT /bin/bash /cron.sh" >> /var/spool/cron/crontabs/root
+echo "$EXECAT /usr/local/bin/gcalvault" >> /var/spool/cron/crontabs/root
 
 echo "Syncing now..."
 /usr/local/bin/gcalvault sync
