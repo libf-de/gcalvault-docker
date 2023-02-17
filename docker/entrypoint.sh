@@ -2,7 +2,7 @@
 
 if [ "$1" == "setup" ]; then
     echo "Initiating image..."
-    /usr/local/bin/gcalvault "$@"
+    /usr/local/bin/gcalvault setup
     exit 0
 fi
 

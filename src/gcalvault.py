@@ -16,7 +16,7 @@ from google.oauth2.credentials import Credentials
 from .google_oauth2 import GoogleOAuth2
 from .git_vault_repo import GitVaultRepo
 from .etag_manager import ETagManager
-from settings import Settings
+from src.settings import Settings
 
 from deprecated import deprecated
 
@@ -59,6 +59,9 @@ class Gcalvault:
             self.config = Settings.from_json(open(Settings.get_configfile()))
             return
 
+        print("[D] Arguments:")
+        print(args)
+
         p = argparse.ArgumentParser(
             prog='GCalVault',
             description='Backups your Google calendars into a Git repository of ics files',
@@ -74,8 +77,8 @@ class Gcalvault:
         p.add_argument('--client-id', default=Settings.DEFAULT_CLIENT_ID, required=False, type=str)
         p.add_argument('--client-secret', default=Settings.DEFAULT_CLIENT_SECRET, required=False, type=str)
         p.add_argument('--ssh-key', default=Settings.get_default_ssh_key(), required=False, type=str)
-        p.add_argument('command', default="AUTO", required=False, choices=['sync', 'setup', 'test', 'clean-sync'])
-        p.add_argument('username', default='', required=False)
+        p.add_argument('--username', default='', required=False)
+        p.add_argument('command', nargs='?', default="AUTO", choices=['AUTO','sync', 'setup', 'test', 'clean-sync'])
 
         ap = p.parse_args(args)
 
@@ -91,7 +94,7 @@ class Gcalvault:
             self.config = Settings.from_json(open(conf_file))
         else:
             self.config = Settings(ap.username, ap.client_id, ap.client_secret, [], ap.ignore_role,
-                                   ap.output_dir, ap.push_repo, ap.ssh_key, ap.conf_dir, ap.command)
+                                   ap.output_dir, ap.push, ap.ssh_key, ap.conf_dir, ap.command)
             if ap.command != 'setup':
                 # Load user calendar and populate the configuration array if not setting up
                 self._load_calendars_from_commandline(ap.calendar)

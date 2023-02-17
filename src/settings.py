@@ -9,29 +9,33 @@ from src import gcalvault
 
 class Settings:
 
-    @staticmethod
-    def is_docker():
+    @classmethod
+    def is_docker(cls):
         return os.environ.get("IS_DOCKER", False)
 
-    @staticmethod
-    def get_root_dir():
-        return "/app" if Settings.is_docker() else os.path.join(os.path.expanduser("~"), ".gcalvault")
+    @classmethod
+    def get_root_dir(cls):
+        return "/app" if cls.is_docker() else os.path.join(os.path.expanduser("~"), ".gcalvault")
 
-    @staticmethod
-    def get_default_conf_dir():
-        return os.path.join(Settings.get_root_dir(), "conf")
+    @classmethod
+    def get_default_conf_dir(cls):
+        return os.path.join(cls.get_root_dir(), "conf")
 
-    @staticmethod
-    def get_configfile(config_dir=get_default_conf_dir()):
+    @classmethod
+    def get_configfile(cls):
+        return os.path.join(cls.get_default_conf_dir(), "config.json")
+
+    @classmethod
+    def get_configfile(cls, config_dir):
         return os.path.join(config_dir, "config.json")
 
-    @staticmethod
-    def get_default_output_dir():
-        return os.path.join(Settings.get_root_dir(), "output")
+    @classmethod
+    def get_default_output_dir(cls):
+        return os.path.join(cls.get_root_dir(), "output")
 
-    @staticmethod
-    def get_default_ssh_key():
-        return os.path.join(Settings.get_root_dir(), "ssh-key")
+    @classmethod
+    def get_default_ssh_key(cls):
+        return os.path.join(cls.get_root_dir(), "ssh-key")
 
     DEFAULT_CLIENT_ID = "261805543927-7p1s5ee657kg0427vs2r1f90dins6hdd.apps.googleusercontent.com"
     DEFAULT_CLIENT_SECRET = "pLKRSKrIIWw7K-CD1DWWV2_Y"
@@ -71,4 +75,4 @@ class Settings:
 
     @classmethod
     def default_settings(cls):
-        return cls('', None, None, None, None, None, False, None)
+        return cls('', None, None, None, None, None, False, None, None, None)
