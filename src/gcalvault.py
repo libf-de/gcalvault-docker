@@ -16,7 +16,7 @@ from google.oauth2.credentials import Credentials
 from .google_oauth2 import GoogleOAuth2
 from .git_vault_repo import GitVaultRepo
 from .etag_manager import ETagManager
-from src.settings import Settings
+from .settings import Settings
 
 from deprecated import deprecated
 
