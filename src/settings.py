@@ -4,7 +4,7 @@ import json
 import os
 from types import SimpleNamespace as Namespace
 
-from src import gcalvault
+from .gcalvault import Calendar
 
 
 class Settings:
@@ -50,7 +50,7 @@ class Settings:
     #         self.push_repo = (os.getenv("PUSH_REPO") or "false").lower() == "true"
     #         self.no_cache = (os.getenv("NO_CACHE") or "false").lower() == "true"
     def __init__(self, username: str, client_id: str | None, client_secret: str | None,
-                 calendars: list[gcalvault.Calendar] | None, ignored_roles: list[str] | None,
+                 calendars: list[Calendar] | None, ignored_roles: list[str] | None,
                  output_dir: str | None, conf_dir: str | None,
                  push_repo: bool, ssh_key_dir: str | None,
                  command: str | None):
