@@ -4,7 +4,9 @@ import json
 import os
 from types import SimpleNamespace as Namespace
 
-from .gcalvault import Calendar
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from .gcalvault import Calendar
 
 
 class Settings:
