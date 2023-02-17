@@ -24,11 +24,9 @@ class Settings:
         return os.path.join(cls.get_root_dir(), "conf")
 
     @classmethod
-    def get_configfile(cls):
-        return os.path.join(cls.get_default_conf_dir(), "config.json")
-
-    @classmethod
-    def get_configfile(cls, config_dir):
+    def get_configfile(cls, config_dir=None):
+        if config_dir is None:
+            config_dir = cls.get_default_conf_dir()
         return os.path.join(config_dir, "config.json")
 
     @classmethod
