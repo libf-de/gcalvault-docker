@@ -142,15 +142,15 @@ class Gcalvault:
                 f"Config dir ({self.config.conf_dir}) is not writable! Change permissions, or specify custom config directory with -c.")
             exit(1)
         if self._rlinput("Use custom Client ID/Secret for OAuth? (Y/n): ",
-                         "Y" if self.config.client_id == self.config.DEFAULT_CLIENT_ID else "N") != "n":
+                         "Y" if self.config.client_id == Settings.DEFAULT_CLIENT_ID else "N") != "n":
             self.config.client_id = self._rlinput(
                 "Client ID: ",
-                self.config.client_id if self.config.client_id != self.config.DEFAULT_CLIENT_ID
+                self.config.client_id if self.config.client_id != Settings.DEFAULT_CLIENT_ID
                 else "")
 
             self.config.client_secret = self._rlinput(
                 "Client Secret: ",
-                self.config.client_secret if self.config.client_secret != self.config.DEFAULT_CLIENT_SECRET
+                self.config.client_secret if self.config.client_secret != Settings.DEFAULT_CLIENT_SECRET
                 else "")
         self.config.username = self._rlinput("Google account email: ", self.config.username)
         print("  ┌───────────────────────────────────────────────┐")
