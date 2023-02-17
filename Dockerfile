@@ -12,7 +12,7 @@ RUN cd /usr/local/src \
     && mkdir -p /root/gcalvault
 
 WORKDIR /root/gcalvault
-
+ENV IS_DOCKER Yes
 RUN chmod a+x /entrypoint.sh
 ENTRYPOINT [ "/entrypoint.sh" ]
 #ENTRYPOINT [ "gcalvault" ]
