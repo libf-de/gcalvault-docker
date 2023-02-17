@@ -18,7 +18,7 @@ from .git_vault_repo import GitVaultRepo
 from .etag_manager import ETagManager
 from .settings import Settings
 
-from deprecated import deprecated
+# from deprecated import deprecated
 
 # Note: OAuth2 auth code flow for "installed applications" assumes the client secret
 # cannot actually be kept secret (must be embedded in application/source code).
@@ -323,100 +323,100 @@ class Gcalvault:
         finally:
             readline.set_startup_hook()
 
-    @deprecated()
-    def _parse_options(self, cli_args):
-        show_help = show_version = authenticate = False
+    # @deprecated()
+    # def _parse_options(self, cli_args):
+    #     show_help = show_version = authenticate = False
+    #
+    #     try:
+    #         (opts, pos_args) = gnu_getopt(
+    #             cli_args,
+    #             'aefi:c:o:h',
+    #             ['export-only', 'clean', 'ignore-role=',
+    #              'conf-dir=', 'output-dir=', 'vault-dir=',
+    #              'client-id=', 'client-secret=',
+    #              'help', 'version', 'auth', 'push', 'no-cache', ]
+    #         )
+    #     except GetoptError as e:
+    #         raise GcalvaultError(e) from e
+    #
+    #     for opt, val in opts:
+    #         if opt in ['-e', '--export-only']:
+    #             self.export_only = True
+    #         # elif opt in ['-p', '--push']:
+    #         # self.push_repo = True
+    #         # elif opt in ['--no-cache']:
+    #         # self.no_cache = True
+    #         # elif opt in ['-i', '--ignore-role']:
+    #         # self.ignore_roles.append(val.lower())
+    #         # elif opt in ['-c', '--conf-dir']:
+    #         # self.conf_dir = val
+    #         # self.userfile_path = os.path.join(self.conf_dir, '.user')
+    #         # self.client_id_file = os.path.join(self.conf_dir, '.client-id')
+    #         # self.client_secret_file = os.path.join(self.conf_dir, '.client-secret')
+    #         # elif opt in ['-o', '--output-dir', '--vault-dir']:
+    #         # self.output_dir = val
+    #         # elif opt in ['--client-id']:
+    #         # self.client_id = val
+    #         # elif opt in ['--client-secret']:
+    #         # self.client_secret = val
+    #         elif opt in ['-h', '--help']:
+    #             show_help = True
+    #         elif opt in ['-a', '--auth']:
+    #             authenticate = True
+    #         elif opt in ['--version']:
+    #             show_version = True
+    #
+    #     if len(opts) == 0 and len(pos_args) == 0:
+    #         show_help = True
+    #
+    #     if show_help:
+    #         print(self.usage())
+    #         return False
+    #     if show_version:
+    #         print(self.version())
+    #         return False
+    #     # if len(pos_args) >= 1:
+    #     # self.command = pos_args[0]
+    #     # if len(pos_args) >= 2:
+    #     # self.config.user = pos_args[1].lower().strip()
+    #     # elif os.path.exists(self.userfile_path):
+    #     # self.config.user = ''.join(open(self.config.userfile_path).readlines())
+    #     if authenticate:
+    #         self._authenticate()
+    #         return False
+    #     # for arg in pos_args[2:]:
+    #     # self.includes.append(arg.lower())
+    #
+    #     # if self.command is None:
+    #     # raise GcalvaultError("<command> argument is required")
+    #     # if self.command not in COMMANDS:
+    #     # raise GcalvaultError("Invalid <command> argument")
+    #     # if self.config.user is None:
+    #     #    raise GcalvaultError("<user> argument is required")
+    #
+    #     return True
 
-        try:
-            (opts, pos_args) = gnu_getopt(
-                cli_args,
-                'aefi:c:o:h',
-                ['export-only', 'clean', 'ignore-role=',
-                 'conf-dir=', 'output-dir=', 'vault-dir=',
-                 'client-id=', 'client-secret=',
-                 'help', 'version', 'auth', 'push', 'no-cache', ]
-            )
-        except GetoptError as e:
-            raise GcalvaultError(e) from e
-
-        for opt, val in opts:
-            if opt in ['-e', '--export-only']:
-                self.export_only = True
-            # elif opt in ['-p', '--push']:
-            # self.push_repo = True
-            # elif opt in ['--no-cache']:
-            # self.no_cache = True
-            # elif opt in ['-i', '--ignore-role']:
-            # self.ignore_roles.append(val.lower())
-            # elif opt in ['-c', '--conf-dir']:
-            # self.conf_dir = val
-            # self.userfile_path = os.path.join(self.conf_dir, '.user')
-            # self.client_id_file = os.path.join(self.conf_dir, '.client-id')
-            # self.client_secret_file = os.path.join(self.conf_dir, '.client-secret')
-            # elif opt in ['-o', '--output-dir', '--vault-dir']:
-            # self.output_dir = val
-            # elif opt in ['--client-id']:
-            # self.client_id = val
-            # elif opt in ['--client-secret']:
-            # self.client_secret = val
-            elif opt in ['-h', '--help']:
-                show_help = True
-            elif opt in ['-a', '--auth']:
-                authenticate = True
-            elif opt in ['--version']:
-                show_version = True
-
-        if len(opts) == 0 and len(pos_args) == 0:
-            show_help = True
-
-        if show_help:
-            print(self.usage())
-            return False
-        if show_version:
-            print(self.version())
-            return False
-        # if len(pos_args) >= 1:
-        # self.command = pos_args[0]
-        # if len(pos_args) >= 2:
-        # self.config.user = pos_args[1].lower().strip()
-        # elif os.path.exists(self.userfile_path):
-        # self.config.user = ''.join(open(self.config.userfile_path).readlines())
-        if authenticate:
-            self._authenticate()
-            return False
-        # for arg in pos_args[2:]:
-        # self.includes.append(arg.lower())
-
-        # if self.command is None:
-        # raise GcalvaultError("<command> argument is required")
-        # if self.command not in COMMANDS:
-        # raise GcalvaultError("Invalid <command> argument")
-        # if self.config.user is None:
-        #    raise GcalvaultError("<user> argument is required")
-
-        return True
-
-    @deprecated()
-    def _authenticate(self):
-        """
-        Prompt user for email and authenticate with Google,
-        to ensure credentials for headless operation
-        :return: none
-        """
-        self._ensure_dirs()
-        token_file_path = os.path.join(self.config.conf_dir, f"{self.config.username}.token.json")
-        if os.path.exists(token_file_path):
-            print(f"Removing existing configuration {self.config.username}.token.json...")
-            os.remove(token_file_path)
-        self.config.username = None
-        while self.config.username is None:
-            self.config.username = input("Enter your google account email: ")
-            if re.fullmatch(r"([A-Za-z0-9]+[.-_])*[A-Za-z0-9]+@[A-Za-z0-9-]+(\.[A-Z|a-z]{2,})+",
-                            self.config.username) is None:
-                print("Invalid email specified!")
-                self.config.user = None
-        if self._get_oauth2_credentials() is not None:
-            print("Authenticated successfully!")
+    # @deprecated()
+    # def _authenticate(self):
+    #     """
+    #     Prompt user for email and authenticate with Google,
+    #     to ensure credentials for headless operation
+    #     :return: none
+    #     """
+    #     self._ensure_dirs()
+    #     token_file_path = os.path.join(self.config.conf_dir, f"{self.config.username}.token.json")
+    #     if os.path.exists(token_file_path):
+    #         print(f"Removing existing configuration {self.config.username}.token.json...")
+    #         os.remove(token_file_path)
+    #     self.config.username = None
+    #     while self.config.username is None:
+    #         self.config.username = input("Enter your google account email: ")
+    #         if re.fullmatch(r"([A-Za-z0-9]+[.-_])*[A-Za-z0-9]+@[A-Za-z0-9-]+(\.[A-Z|a-z]{2,})+",
+    #                         self.config.username) is None:
+    #             print("Invalid email specified!")
+    #             self.config.user = None
+    #     if self._get_oauth2_credentials() is not None:
+    #         print("Authenticated successfully!")
 
     def _ensure_dirs(self):
         """
@@ -444,7 +444,7 @@ class Gcalvault:
 
         self.auth = credentials
 
-    @deprecated()
+    #deprecated?
     def _get_oauth2_credentials(self):
         token_file_path = os.path.join(self.config.conf_dir, f"{self.config.user}.token.json")
 
@@ -486,30 +486,30 @@ class Gcalvault:
         for cal in self.config.calendars:
             cal.etag = self._google_apis.request_cal_etag(self.auth, cal.id)
 
-    @deprecated()
-    def _get_calendars(self, credentials):
-        calendars = []
-        calendar_list = self._google_apis.request_cal_list(credentials)
-        for item in calendar_list['items']:
-            cal_details = self._google_apis.request_cal_details(credentials, item['id'])
-            calendars.append(
-                Calendar(item['id'], item['summary'], cal_details['etag'], item['accessRole']))
-        return calendars
+    # @deprecated()
+    # def _get_calendars(self, credentials):
+    #     calendars = []
+    #     calendar_list = self._google_apis.request_cal_list(credentials)
+    #     for item in calendar_list['items']:
+    #         cal_details = self._google_apis.request_cal_details(credentials, item['id'])
+    #         calendars.append(
+    #             Calendar(item['id'], item['summary'], cal_details['etag'], item['accessRole']))
+    #     return calendars
 
-    @deprecated()
-    def _get_calendars_singular(self, credentials):
-        """
-        Updates the etag in the stored calendar list
-        :param credentials: Google API credentials
-        :return: list<Calendar>
-        """
-        if len(self.config.calendars) == 0:
-            self.config.calendars = self._get_calendars(credentials)
-            return self.config.calendars
-        for calendar in self.config.calendars:
-            cal_details = self._google_apis.request_cal_details(credentials, calendar.id)
-            calendar.etag = cal_details['etag']
-        return self.config.calendars
+    # @deprecated()
+    # def _get_calendars_singular(self, credentials):
+    #     """
+    #     Updates the etag in the stored calendar list
+    #     :param credentials: Google API credentials
+    #     :return: list<Calendar>
+    #     """
+    #     if len(self.config.calendars) == 0:
+    #         self.config.calendars = self._get_calendars(credentials)
+    #         return self.config.calendars
+    #     for calendar in self.config.calendars:
+    #         cal_details = self._google_apis.request_cal_details(credentials, calendar.id)
+    #         calendar.etag = cal_details['etag']
+    #     return self.config.calendars
 
     def _clean_output_dir(self):
         cal_file_names = [cal.file_name for cal in self.config.calendars]
