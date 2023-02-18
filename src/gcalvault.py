@@ -133,6 +133,7 @@ class Gcalvault:
             self.sync()
 
     def setup(self):
+        self.config.command = 'sync'
         print("  ┌─────────────────────────────────┐")
         print("  │          GCalVault Setup        │")
         print("  └─────────────────────────────────┘")
@@ -446,7 +447,7 @@ class Gcalvault:
 
     #deprecated?
     def _get_oauth2_credentials(self):
-        token_file_path = os.path.join(self.config.conf_dir, f"{self.config.user}.token.json")
+        token_file_path = os.path.join(self.config.conf_dir, f"{self.config.username}.token.json")
 
         (credentials, new_authorization) = self._google_oauth2 \
             .get_credentials(token_file_path, self.config.client_id, self.config.client_secret, OAUTH_SCOPES,
@@ -455,14 +456,11 @@ class Gcalvault:
         if new_authorization:
             user_info = self._google_oauth2.request_user_info(credentials)
             profile_email = user_info['email'].lower().strip()
-            if self.config.user != profile_email:
+            if self.config.username != profile_email:
                 if os.path.exists(token_file_path):
                     os.remove(token_file_path)
                 raise GcalvaultError(
                     f"Authenticated user - {profile_email} - was different than <user> argument specified")
-            with open(self.config.userfile_path, 'w') as f:
-                f.write(self.config.user)
-                f.close()
 
         return credentials
 
