@@ -119,7 +119,8 @@ class Gcalvault:
             self.setup()
         elif self.config.command == "test":
             try:
-                if self._get_oauth2_credentials() is None:
+                self._ensure_auth()
+                if self.auth is None:
                     print("[CRIT] Failed to authenticate!")
                     exit(1)
                 else:
@@ -259,7 +260,7 @@ class Gcalvault:
 
     def sync(self):
         self._ensure_dirs()
-        credentials = self._get_oauth2_credentials()
+        self._ensure_auth()
 
         if not self.export_only:
             self._repo = GitVaultRepo("gcalvault", self.config.output_dir, [".ics"])
@@ -429,6 +430,9 @@ class Gcalvault:
 
     def _ensure_auth(self):
         self._ensure_dirs()
+        if self.auth is not None:
+            return
+
         token_file_path = os.path.join(self.config.conf_dir, f"{self.config.username}.token.json")
 
         (credentials, new_authorization) = self._google_oauth2.get_credentials(token_file_path, self.config.client_id,
@@ -442,27 +446,7 @@ class Gcalvault:
                     os.remove(token_file_path)
                 raise GcalvaultError(
                     f"Authenticated user - {profile_email} - was different than <user> argument specified")
-
         self.auth = credentials
-
-    #deprecated?
-    def _get_oauth2_credentials(self):
-        token_file_path = os.path.join(self.config.conf_dir, f"{self.config.username}.token.json")
-
-        (credentials, new_authorization) = self._google_oauth2 \
-            .get_credentials(token_file_path, self.config.client_id, self.config.client_secret, OAUTH_SCOPES,
-                             self.config.username)
-
-        if new_authorization:
-            user_info = self._google_oauth2.request_user_info(credentials)
-            profile_email = user_info['email'].lower().strip()
-            if self.config.username != profile_email:
-                if os.path.exists(token_file_path):
-                    os.remove(token_file_path)
-                raise GcalvaultError(
-                    f"Authenticated user - {profile_email} - was different than <user> argument specified")
-
-        return credentials
 
     def _load_calendars_from_commandline(self, calendar_ids):
         self._ensure_dirs()
