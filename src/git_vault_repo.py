@@ -37,9 +37,8 @@ class GitVaultRepo():
 
     def push(self):
         print("Pushing repository...")
-        ssh_cmd = f'ssh -o StrictHostKeyChecking=no -i {self._ssh_key_path}'
-        print(f"Using ssh-cmd: {ssh_cmd}")
         if os.path.exists(self._ssh_key_path):
+            ssh_cmd = f'ssh -o StrictHostKeyChecking=no -i {self._ssh_key_path}'
             with self._repo.git.custom_environment(GIT_SSH_COMMAND=ssh_cmd):
                 for remote in self._repo.remotes:
                     remote.push()
