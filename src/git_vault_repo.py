@@ -4,9 +4,10 @@ from git import Repo, exc
 
 class GitVaultRepo():
 
-    def __init__(self, name, dir_path, extensions):
+    def __init__(self, name, dir_path, extensions, ssh_key_path=None):
         self._name = name
         self._extensions = extensions
+        self._ssh_key_path = ssh_key_path
         self._repo = None
         try:
             self._repo = Repo(dir_path)
@@ -28,7 +29,7 @@ class GitVaultRepo():
 
     def commit(self, message):
         changes = self._repo.index.diff(self._repo.head.commit)
-        if (changes):
+        if changes:
             self._repo.index.commit(message)
             print(f"Committed {len(changes)} revision(s) to {self._name} repository")
         else:
@@ -36,15 +37,12 @@ class GitVaultRepo():
 
     def push(self):
         print("Pushing repository...")
-        if os.path.exists("/ssh-key"):
-            ssh_cmd = 'ssh -o StrictHostKeyChecking=no -i /ssh-key'
+        if os.path.exists(self._ssh_key_path):
+            ssh_cmd = f'ssh -o StrictHostKeyChecking=no -i {self._ssh_key_path}'
             with self._repo.git.custom_environment(GIT_SSH_COMMAND=ssh_cmd):
                 for remote in self._repo.remotes:
                     remote.push()
             return
-
-        for remote in self._repo.remotes:
-            remote.push()
 
     def _add_gitignore(self):
         gitignore_path = os.path.join(self._repo.working_dir, ".gitignore")

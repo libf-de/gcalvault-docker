@@ -263,7 +263,7 @@ class Gcalvault:
         self._ensure_auth()
 
         if not self.export_only:
-            self._repo = GitVaultRepo("gcalvault", self.config.output_dir, [".ics"])
+            self._repo = GitVaultRepo("gcalvault", self.config.output_dir, [".ics"], self.config.ssh_key_dir)
 
         # if self.no_cache and os.path.exists(os.path.join(self.conf_dir, ".etags")): # TODO: Do properly :(
         #    os.remove(os.path.join(self.conf_dir, ".etags"))
