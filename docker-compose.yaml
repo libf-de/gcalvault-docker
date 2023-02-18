@@ -7,7 +7,8 @@ services:
       - "CLIENT_ID=<>"
       - "CLIENT_SECRET=<>"
       - "NO_CACHE=true"
+      - "EXECAT=* * * * *"
     volumes:
-#      - "<ssh-key>:/ssh-key:ro"
-      - "./data:/root/gcalvault"
-      - "./gcalvault:/root/.gcalvault"
+#      - "<ssh-key>:/app/ssh-key:ro"
+      - "./data:/app/output"
+      - "./gcalvault:/app/conf"
