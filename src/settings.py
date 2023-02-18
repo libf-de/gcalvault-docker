@@ -75,4 +75,4 @@ class Settings:
 
     @classmethod
     def default_settings(cls):
-        return cls('', None, None, None, None, None, False, None, None, None)
+        return cls('', None, None, None, None, None, None, False, None, None)

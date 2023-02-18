@@ -6,7 +6,7 @@ if [ "$1" == "setup" ]; then
     exit 0
 fi
 
-if [ ! -f "/app/config/config.json" ]; then
+if [ ! -f "/app/conf/config.json" ]; then
     echo "No configuration file found, please initiate this image first!"
     exit 1
 fi
