@@ -518,9 +518,9 @@ class Gcalvault:
         cal_file_path = os.path.join(self.config.output_dir, calendar.file_name)
 
         etag_changed = etags.test_for_change_and_save(calendar.id, calendar.etag)
-        if os.path.exists(cal_file_path) and not etag_changed:
-            print(f"Calendar '{calendar.name}' is up to date")
-            return
+        #if os.path.exists(cal_file_path) and not etag_changed:
+        #    print(f"Calendar '{calendar.name}' is up to date")
+        #    return
 
         print(f"Downloading calendar '{calendar.name}'")
         ical = self._google_apis.request_cal_as_ical(calendar.id, self.auth)
