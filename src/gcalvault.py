@@ -545,7 +545,8 @@ class Calendar:
         self.etag = etag
         self.access_role = access_role
 
-        self.file_name = f"{self.id.strip().lower()}.ics"
+        #self.file_name = f"{self.id.strip().lower()}.ics"
+        self.file_name = f"{re.sub('[^0-9a-zA-ZüöäÜÖÄß_-]+', '_', self.name.strip())}.ics"
 
 
 class GoogleApis:
