@@ -451,7 +451,7 @@ class Gcalvault:
 
         (credentials, new_authorization) = self._google_oauth2 \
             .get_credentials(token_file_path, self.config.client_id, self.config.client_secret, OAUTH_SCOPES,
-                             self.config.user)
+                             self.config.username)
 
         if new_authorization:
             user_info = self._google_oauth2.request_user_info(credentials)
